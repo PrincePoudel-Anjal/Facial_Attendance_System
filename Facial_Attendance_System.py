@@ -11,7 +11,7 @@ flag_webcam = True
 flag_back = False
 flag_capture = False
 webcam = cv2.VideoCapture(0)
-known = r'D:\pythonProject1\face-attendance-system\Known'
+known = r'D:\pythonProject1\Facial-Attendance-System\Known'
 flag_continue = False
 i = 0
 
@@ -33,6 +33,7 @@ def forget_signup():
 def back():
     global flag_back
     flag_back = True
+
 def capture():
     global webcam, flag_capture
     flag_capture = True
@@ -108,13 +109,7 @@ def signup():
             flag_webcam = False
 
         return
-    if flag_back:
-        webcam.release()
-        cv2.destroyAllWindows()
-        flag_webcam = False
-        forget_signup()
-        main()
-        flag_back = False
+
     label_image.after(10, signup)
 
 
@@ -150,12 +145,14 @@ def login():
         flag_webcam = False
         forget_signup()
         main()
+        box.delete('1.0', 'end')
         flag_back = False
         return
     face_name = box.get('1.0', 'end-1c')
 
     # Face Detection and Recognition:
     if flag_continue:
+        box.delete('1.0', 'end')
         if face_name in known_names:
             best_distance = 999
             label_image.faceimage, x_start, y_start, height, width = detect_and_crop(label_image.realone)
@@ -192,8 +189,19 @@ def login():
                     forget_login()
                     button_back.grid_forget()
                     button_main.grid(row=2, column=0)
-                    return
 
+                    return
+        else:
+            IMage = Image.open(r'loginUnsuccessful.png')
+            IMage = IMage.resize((500, 300))
+            IMage = ImageTk.PhotoImage(IMage)
+            label_image.image = IMage  # store reference to avoid garbage collection
+            label_image.configure(image=label_image.image)
+            forget_login()
+            button_back.grid_forget()
+            button_main.grid(row=2, column=0)
+
+            return
     flag_continue = False
     label_image.after(10, login)
 
